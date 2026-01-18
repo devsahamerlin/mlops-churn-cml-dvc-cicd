@@ -67,3 +67,6 @@ on:
   pull_request:
     branches: [ main, dev ]
 ```
+
+### Git log
+![git-graph.png](images%2Fgit-graph.png)
