@@ -1,0 +1,228 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{grffile} % Pour gérer les underscores dans les noms de fichiers images
+
+% Configuration de la page
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+% Configuration des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Rapport MLOps - CI/CD},
+    pdfauthor={Saha Merlin}
+}
+
+% Configuration des blocs de code
+\definecolor{codegray}{rgb}{0.95,0.95,0.95}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+    backgroundcolor=\color{codegray},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{gray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single
+}
+
+% Titre
+\title{\textbf{\Huge CI/CD pour le Machine Learning}\\ \Large GitHub Actions + CML}
+\author{\textbf{Saha Merlin}}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+    \textbf{Repository GitHub :} \url{https://github.com/devsahamerlin/mlops-churn-cml-dvc-cicd}
+\end{center}
+
+\vspace{1cm}
+\hrule
+\vspace{1cm}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Ce projet met en place une automatisation MLOps côté GitHub. L'objectif est de créer un pipeline d'intégration continue (CI) pour le Machine Learning qui permet de :
+
+\begin{itemize}
+    \item Exécuter l’entraînement du modèle à chaque \texttt{git push} sur la branche \texttt{main} et chaque Pull Request (PR) sur \texttt{main} et \texttt{dev}.
+    \item Générer les métriques (\texttt{metrics.txt}) et la matrice de confusion.
+    \item Publier automatiquement un rapport lisible en commentaire sur GitHub grâce à CML (Continuous Machine Learning).
+\end{itemize}
+
+\section{Vue d’ensemble}
+Le flux de travail typique mis en place est le suivant :
+\begin{enumerate}
+    \item Vous disposez d'un projet ML classique (\texttt{dataset.csv}, \texttt{script.py}).
+    \item Vous poussez ce projet sur GitHub.
+    \item GitHub Actions lance automatiquement l’entraînement (CI).
+    \item Les performances du modèle (scores, F1-score, matrices de confusion) sont publiées en commentaire.
+\end{enumerate}
+
+Cette approche est particulièrement utile pour les projets de data science en équipe, offrant une visibilité instantanée de la qualité du modèle, une traçabilité des changements et une boucle d’amélioration continue.
+
+\section{Rôle de chaque fichier}
+\begin{description}
+    \item[dataset.csv] Données d’entraînement/test utilisées par le script.
+    \item[script.py] Le script principal qui :
+    \begin{itemize}
+        \item Lit \texttt{dataset.csv},
+        \item Prépare les features (imputations, encodage, équilibrage),
+        \item Entraîne un modèle (ex. RandomForestClassifier),
+        \item Calcule des métriques (F1, précision, rappel, etc.),
+        \item Génère une figure \texttt{conf\_matrix.png},
+        \item Écrit un résumé clair dans \texttt{metrics.txt}.
+    \end{itemize}
+    \item[requirements.txt] Dépendances Python à installer dans la CI.
+    \item[.github/workflows/cml-churn.yaml] Pipeline GitHub Actions + CML.
+\end{description}
+
+\section{Configuration de l'environnement local}
+Pour configurer l'environnement sur votre machine locale :
+
+\begin{lstlisting}[language=bash]
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+\end{lstlisting}
+
+Pour lancer le test localement :
+\begin{lstlisting}[language=bash]
+python3 script.py
+\end{lstlisting}
+
+\section{Résultats Locaux}
+
+\subsection{Métriques}
+Aperçu des métriques de performance (Accuracy, F1-score, ROC-AUC) générées lors de l'exécution locale du script.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/metrics.png}
+    \caption{Métriques de performance}
+\end{figure}
+
+\subsection{Matrice de Confusion}
+Matrice de confusion montrant la capacité du modèle à bien classer les clients (churn vs non-churn).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/confusion_matrix.png}
+    \caption{Matrice de confusion}
+\end{figure}
+
+\subsection{Avec Poids de Classe (Class Weights)}
+Résultats obtenus en utilisant des poids de classe pour compenser le déséquilibre des données.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/with_class_weights.png}
+    \caption{Résultats avec Class Weights}
+\end{figure}
+
+\subsection{Avec SMOTE}
+Résultats après application de SMOTE (Synthetic Minority Over-sampling Technique) pour générer des exemples synthétiques de la classe minoritaire.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/with_smote.png}
+    \caption{Résultats avec SMOTE}
+\end{figure}
+
+\subsection{Sans traitement du déséquilibre (Baseline)}
+Comparaison avec un jeu de données où le déséquilibre de classe n'est pas traité.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/without_imbalance.png}
+    \caption{Résultats sans traitement du déséquilibre}
+\end{figure}
+
+\section{Exécution GitHub Actions + CML}
+
+\subsection{Interface GitHub Actions}
+Visualisation du succès de l'exécution du workflow CML dans l'interface GitHub.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/github-actions.png}
+    \caption{Succès du workflow GitHub Actions}
+\end{figure}
+
+\subsection{Rapports CML}
+Rapport automatique publié par CML en commentaire du commit.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/cml-report.png}
+    \caption{Rapport CML en commentaire}
+\end{figure}
+
+\section{Collaborations GitHub (Pull Requests)}
+Le système gère automatiquement les Pull Requests et les notifications.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/pull-request-open.png}
+    \caption{Ouverture d'une Pull Request}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/github-actions-merged-pr.png}
+    \caption{Exécution CI/CD après fusion (Merge)}
+\end{figure}
+
+\section{Optimisation et Limites}
+
+\subsection{Gestion des limites d'API (Rate Limit)}
+Une erreur \textit{API rate limit exceeded} peut survenir si trop d'exécutions sont lancées simultanément.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/cml-API-rate-limit-exceeded.png}
+    \caption{Erreur API Rate Limit}
+\end{figure}
+
+Pour résoudre ce problème, le pipeline a été optimisé pour ne s'exécuter que sur les événements pertinents :
+\begin{lstlisting}[language=yaml]
+on:
+  push:
+    branches: [ main]
+  pull_request:
+    branches: [ main, dev ]
+\end{lstlisting}
+
+\section{Conclusion}
+Nous avons construit une boucle \textbf{entraînement + reporting} entièrement automatisée via GitHub Actions et CML, permettant de \textit{mesurer en continu}.
+
+\subsection*{Résumé des accomplissements}
+\begin{itemize}
+    \item Automatisation de l’entraînement sur push et PR.
+    \item Génération automatique des métriques et graphiques.
+    \item Feedback centralisé directement dans GitHub.
+\end{itemize}
+
+La prochaine étape consistera à ajouter le \textbf{stockage et le versioning en continu} pour pallier les limites actuelles (données dans le repo, absence d'archivage du modèle).
+
+\end{document}
