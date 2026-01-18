@@ -29,3 +29,12 @@ python3 script.py
 ### Without Imbalance
 ![without-imbalance.png](images%2Fwithout-imbalance.png)
 
+### .gitignore
+![gitignore.png](images%2Fgitignore.png)
+
+## GitHub Actions Run
+![github-actions.png](images%2Fgithub-actions.png)
+
+## CML Reports https://github.com/devsahamerlin/mlops-churn-cml-dvc-cicd/commit/4b1904dde888d0b9ead3462d32ec6cd626f6a54a#commitcomment-174990771
+![cml-report.png](images%2Fcml-report.png)
+
