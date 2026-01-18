@@ -38,3 +38,16 @@ python3 script.py
 ## CML Reports https://github.com/devsahamerlin/mlops-churn-cml-dvc-cicd/commit/4b1904dde888d0b9ead3462d32ec6cd626f6a54a#commitcomment-174990771
 ![cml-report.png](images%2Fcml-report.png)
 
+## GitHub collaborations (PR)
+
+### Open Pull Request
+![pull-request-open.png](images%2Fpull-request-open.png)
+
+### Pull Request List
+![pull-request.png](images%2Fpull-request.png)
+
+### GitHub Actions (Merged PL)
+![github-actions-merged-pr.png](images%2Fgithub-actions-merged-pr.png)
+
+### CML E-mail Notifications
+![email-notifications.png](images%2Femail-notifications.png)
